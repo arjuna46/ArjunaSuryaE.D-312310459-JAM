@@ -1,0 +1,190 @@
+import React, { useState, useEffect } from 'react';
+import { Clock, Alarm, Timer, User } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+
+const TimeKeeperApp = () => {
+  const [activeTab, setActiveTab] = useState('clock');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  return (
+    <div className="h-screen bg-gray-100 flex flex-col">
+      <div className="flex-1 p-6 overflow-y-auto">
+        {isLoggedIn ? <TimeKeeperFeatures activeTab={activeTab} setActiveTab={setActiveTab} /> : <LoginPage onLogin={() => setIsLoggedIn(true)} />}
+      </div>
+    </div>
+  );
+};
+
+const LoginPage = ({ onLogin }) => {
+  return (
+    <div className="flex items-center justify-center h-full">
+      <Card className="w-[350px]">
+        <CardHeader>
+          <CardTitle>Welcome to TimeKeeper</CardTitle>
+          <CardDescription>Login to manage your time settings</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={onLogin} className="w-full">
+            <img src="/api/placeholder/24/24" alt="Google logo" className="mr-2 h-4 w-4" />
+            Login with Google
+          </Button>
+        </CardContent>
+        <CardFooter>
+          <p className="text-sm text-gray-500">By logging in, you agree to our Terms of Service and Privacy Policy.</p>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+};
+
+const TimeKeeperFeatures = ({ activeTab, setActiveTab }) => {
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'clock':
+        return <ClockView />;
+      case 'alarm':
+        return <AlarmView />;
+      case 'stopwatch':
+        return <StopwatchView />;
+      case 'account':
+        return <AccountView />;
+      default:
+        return <ClockView />;
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        {renderContent()}
+      </div>
+
+      <div className="bg-white border-t border-gray-200 mt-4">
+        <div className="flex justify-around py-2">
+          <button onClick={() => setActiveTab('clock')} className={`flex flex-col items-center ${activeTab === 'clock' ? 'text-blue-500' : 'text-gray-500'}`}>
+            <Clock size={24} />
+            <span className="text-xs mt-1">Clock</span>
+          </button>
+          <button onClick={() => setActiveTab('alarm')} className={`flex flex-col items-center ${activeTab === 'alarm' ? 'text-blue-500' : 'text-gray-500'}`}>
+            <Alarm size={24} />
+            <span className="text-xs mt-1">Alarm</span>
+          </button>
+          <button onClick={() => setActiveTab('stopwatch')} className={`flex flex-col items-center ${activeTab === 'stopwatch' ? 'text-blue-500' : 'text-gray-500'}`}>
+            <Timer size={24} />
+            <span className="text-xs mt-1">Stopwatch</span>
+          </button>
+          <button onClick={() => setActiveTab('account')} className={`flex flex-col items-center ${activeTab === 'account' ? 'text-blue-500' : 'text-gray-500'}`}>
+            <User size={24} />
+            <span className="text-xs mt-1">Account</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ClockView = () => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="text-center">
+      <h2 className="text-2xl font-bold mb-4">Current Time</h2>
+      <p className="text-4xl font-mono text-blue-500">{time.toLocaleTimeString()}</p>
+    </div>
+  );
+};
+
+const AlarmView = () => {
+  const [alarmTime, setAlarmTime] = useState('');
+  const [isAlarmSet, setIsAlarmSet] = useState(false);
+
+  const handleSetAlarm = () => {
+    setIsAlarmSet(true);
+    alert('Alarm set for ' + alarmTime);
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Set Alarm</h2>
+      <Card>
+        <CardContent>
+          <input
+            type="time"
+            value={alarmTime}
+            onChange={(e) => setAlarmTime(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md mb-4"
+          />
+          <Button onClick={handleSetAlarm} className="w-full">Set Alarm</Button>
+          {isAlarmSet && <p className="mt-2 text-green-500">Alarm set for {alarmTime}</p>}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const StopwatchView = () => {
+  const [time, setTime] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+
+  useEffect(() => {
+    let interval;
+    if (isRunning) {
+      interval = setInterval(() => {
+        setTime((prevTime) => prevTime + 1);
+      }, 1000);
+    } else if (!isRunning && time !== 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning, time]);
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Stopwatch</h2>
+      <Card>
+        <CardContent className="text-center">
+          <p className="text-3xl font-mono text-blue-500 mb-4">{new Date(time * 1000).toISOString().substr(11, 8)}</p>
+          <div className="flex justify-center space-x-4">
+            <Button onClick={() => setIsRunning(!isRunning)}>
+              {isRunning ? 'Pause' : 'Start'}
+            </Button>
+            <Button onClick={() => { setTime(0); setIsRunning(false); }} variant="outline">
+              Reset
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const AccountView = () => {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Account</h2>
+      <Card className="mb-4">
+        <CardContent className="pt-6">
+          <div className="flex items-center mb-4">
+            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mr-4">
+              JD
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">John Doe</h3>
+              <p className="text-gray-500">john.doe@example.com</p>
+            </div>
+          </div>
+          <Button className="w-full mb-2">Edit Profile</Button>
+          <Button variant="outline" className="w-full">Logout</Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default TimeKeeperApp;
