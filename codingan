@@ -1,0 +1,58 @@
+import tkinter as tk
+from time import strftime
+from datetime import datetime
+
+def update_time():
+    """
+    Fungsi untuk memperbarui waktu setiap detik dan menampilkannya di label.
+    """
+    current_time = strftime('%H:%M:%S')
+    label_time.config(text=current_time)
+    label_time.after(1000, update_time)
+
+def get_date():
+    """
+    Fungsi untuk mendapatkan tanggal hari ini dalam format yang mudah dibaca.
+    """
+    today_date = datetime.now().strftime('%A, %d %B %Y')
+    return today_date
+
+def set_greeting():
+    """
+    Fungsi untuk menampilkan ucapan selamat pagi/siang/sore/malam sesuai waktu.
+    """
+    hour = datetime.now().hour
+    if 5 <= hour < 12:
+        greeting = "Selamat Pagi!"
+    elif 12 <= hour < 17:
+        greeting = "Selamat Siang!"
+    elif 17 <= hour < 20:
+        greeting = "Selamat Sore!"
+    else:
+        greeting = "Selamat Malam!"
+    label_greeting.config(text=greeting)
+
+# Membuat jendela utama
+root = tk.Tk()
+root.title("Aplikasi Jam Lengkap")
+root.geometry("500x300")
+root.resizable(False, False)
+
+# Label untuk menampilkan ucapan selamat
+label_greeting = tk.Label(root, font=('Arial', 20), bg='lightblue', fg='black', pady=10)
+label_greeting.pack(fill='x')
+set_greeting()
+
+# Label untuk menampilkan tanggal
+label_date = tk.Label(root, text=get_date(), font=('Arial', 16), bg='lightgray', fg='black', pady=10)
+label_date.pack(fill='x')
+
+# Label untuk menampilkan waktu
+label_time = tk.Label(root, font=('Arial', 48), bg='black', fg='white')
+label_time.pack(anchor='center', pady=20)
+
+# Memulai pembaruan waktu
+update_time()
+
+# Menjalankan aplikasi
+root.mainloop()
