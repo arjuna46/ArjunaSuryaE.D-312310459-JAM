@@ -8,3 +8,25 @@
     android:textSize="24sp"
     android:textColor="#FFFFFF"
     android:text="01 Januari 2025" />
+
+
+private lateinit var dateTextView: TextView
+
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+
+    // Inisialisasi TextView
+    timeTextView = findViewById(R.id.timeTextView)
+    dateTextView = findViewById(R.id.dateTextView)
+
+    // Jalankan pembaruan waktu
+    updateTime()
+    updateDate()
+}
+
+private fun updateDate() {
+    val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault())
+    val currentDate = dateFormat.format(Date())
+    dateTextView.text = currentDate
+}
