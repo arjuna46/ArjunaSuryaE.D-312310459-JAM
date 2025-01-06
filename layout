@@ -1,0 +1,8 @@
+<Spinner
+    android:id="@+id/timeZoneSpinner"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@id/timeTextView"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="16dp"
+    android:spinnerMode="dropdown" />
