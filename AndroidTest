@@ -1,0 +1,46 @@
+// MainActivity.kt
+package com.example.jamapp
+
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.*
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var timeTextView: TextView
+    private val handler = Handler(Looper.getMainLooper())
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // Inisialisasi TextView
+        timeTextView = findViewById(R.id.timeTextView)
+
+        // Jalankan pembaruan waktu
+        updateTime()
+    }
+
+    private fun updateTime() {
+        // Format waktu
+        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+
+        // Perbarui waktu setiap detik
+        handler.post(object : Runnable {
+            override fun run() {
+                val currentTime = timeFormat.format(Date())
+                timeTextView.text = currentTime
+                handler.postDelayed(this, 1000) // Perbarui setiap 1 detik
+            }
+        })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacksAndMessages(null) // Hentikan handler saat aktivitas dihancurkan
+    }
+}
